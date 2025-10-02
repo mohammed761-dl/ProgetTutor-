@@ -1,0 +1,36 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "lint": "eslint resources/js --ext .vue,.js,.ts --fix",
+        "format": "prettier --write resources/js/**/*.{vue,js,ts}",
+        "format:check": "prettier --check resources/js/**/*.{vue,js,ts}"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.20",
+        "axios": "^1.7.4",
+        "concurrently": "^9.0.1",
+        "laravel-vite-plugin": "^1.2.0",
+        "postcss": "^8.4.47",
+        "tailwindcss": "^3.4.13",
+        "vite": "^6.0.11"
+    },
+    "dependencies": {
+        "@inertiajs/inertia-vue3": "^0.6.0",
+        "@inertiajs/vue3": "^2.0.14",
+        "@tanstack/vue-table": "^8.21.3",
+        "@vitejs/plugin-vue": "^5.2.4",
+        "@vueuse/core": "^13.6.0",
+        "chart.js": "^4.5.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "lucide-vue-next": "^0.518.0",
+        "reka-ui": "^2.4.1",
+        "tailwind-merge": "^3.3.1",
+        "tailwindcss-animate": "^1.0.7",
+        "vue-chartjs": "^5.3.2",
+        "ziggy-js": "^2.5.3"
+    }
+}
