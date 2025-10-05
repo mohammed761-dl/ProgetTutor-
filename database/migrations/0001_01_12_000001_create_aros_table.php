@@ -22,13 +22,13 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_po')
-                  ->references('id_po')
-                  ->on('purchase_orders')
-                  ->onDelete('cascade');
+                ->references('id_po')
+                ->on('purchase_orders')
+                ->onDelete('cascade');
 
             $table->foreign('created_by')
-                  ->references('id_user')
-                  ->on('users');
+                ->references('id_user')
+                ->on('users');
         });
     }
 

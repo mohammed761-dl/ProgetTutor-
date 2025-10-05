@@ -8,23 +8,23 @@ use App\Models\Quote;
 use App\Models\QuoteCustomer;
 use App\Models\QuoteProduct;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 /**
  * QuoteController - Handles all quote-related operations
- * 
+ *
  * ARCHITECTURE PRINCIPLES:
  * 1. BACKEND-FIRST CALCULATIONS: All financial calculations happen in the backend
  * 2. FRONTEND DISPLAY ONLY: Vue.js and Blade templates only display data, no calculations
  * 3. SNAPSHOT DATA INTEGRITY: Print/PDF use historical data from quote_customers/quote_products tables
  * 4. VAT RATE HANDLING: User's VAT rate is stored as decimal (0.10 for 10%) and used consistently
- * 
+ *
  * VAT RATE FLOW:
  * - Frontend sends: 10 (percentage)
  * - Frontend converts to: 0.10 (decimal) before sending to backend
@@ -36,21 +36,21 @@ class QuoteController extends Controller
 {
     /**
      * Display all quotes with search and filtering capabilities
-     * 
+     *
      * PURPOSE: Frontend only displays data - no calculations performed here
      * DATA SOURCE: Live database data (not snapshots)
-     * 
-     * @param Request $request - Search, status, and PO status filters
+     *
+     * @param  Request  $request  - Search, status, and PO status filters
      * @return Inertia\Inertia - Renders Quotes/Index.vue with filtered quotes
      */
     public function index(Request $request)
     {
         $query = Quote::with([
             'customer',
-            'customerSnapshot', 
+            'customerSnapshot',
             'products',
             'quoteProducts',
-            'user'
+            'user',
         ]);
 
         // Search functionality across multiple fields
@@ -94,10 +94,10 @@ class QuoteController extends Controller
 
     /**
      * Show quote creation form
-     * 
+     *
      * PURPOSE: Provides data for dropdowns - no calculations
      * DATA: Customers, users, and active products for form selection
-     * 
+     *
      * @return Inertia\Inertia - Renders Quotes/Create.vue with form data
      */
     public function create()
@@ -116,14 +116,14 @@ class QuoteController extends Controller
 
     /**
      * Create new quote with all financial calculations performed in backend
-     * 
+     *
      * ARCHITECTURE: Frontend sends raw data, backend calculates and stores all totals
      * VAT RATE: Accepts decimal values (0.10 for 10%), defaults to 0.20 if not provided
      * SNAPSHOTS: Creates customer and product snapshots for historical integrity
-     * 
-     * @param Request $request - Validated quote data including products array
+     *
+     * @param  Request  $request  - Validated quote data including products array
      * @return Redirect - To quotes index with success message
-     * 
+     *
      * FINANCIAL CALCULATIONS:
      * 1. Subtotal = Sum of (quantity × unit_price) for all products
      * 2. Total after reduction = Subtotal - reduction amount
@@ -179,7 +179,7 @@ class QuoteController extends Controller
                     'vat' => 0, // Will be calculated
                     'total_ttc' => 0, // Will be calculated
                     'signature_name' => $validated['signature_name'],
-                    'signature_title' => $validated['signature_title']
+                    'signature_title' => $validated['signature_title'],
                 ]);
 
                 // Create customer snapshot for historical data integrity
@@ -206,7 +206,7 @@ class QuoteController extends Controller
                         'total_line_price' => $productData['quantity'] * $productData['unit_price'],
                     ]);
                 }
-                
+
                 // BACKEND CALCULATION: Calculate all financial totals
                 $totalAmount = 0;
                 foreach ($validated['products'] as $productData) {
@@ -227,7 +227,7 @@ class QuoteController extends Controller
                     'reduction' => $reduction,
                     'vat_rate' => $vatRate,
                     'vat' => $vat,
-                    'total_ttc' => $totalTtc
+                    'total_ttc' => $totalTtc,
                 ]);
 
                 return $quote;
@@ -243,11 +243,11 @@ class QuoteController extends Controller
 
     /**
      * Display the specified quote
-     * 
+     *
      * PURPOSE: Show detailed view of a single quote
      * DATA SOURCE: Live database data with relationships
-     * 
-     * @param Quote $quote - Quote model instance
+     *
+     * @param  Quote  $quote  - Quote model instance
      * @return Inertia\Inertia - Renders Quotes/Show.vue
      */
     public function show(Quote $quote)
@@ -256,7 +256,7 @@ class QuoteController extends Controller
             'customer',
             'user',
             'products',
-            'customerSnapshot'
+            'customerSnapshot',
         ]);
 
         return Inertia::render('Quotes/Show', [
@@ -266,11 +266,11 @@ class QuoteController extends Controller
 
     /**
      * Show the form for editing the specified quote
-     * 
+     *
      * PURPOSE: Load existing quote data for editing
      * DATA: Current quote data, customers, users, and products for form
-     * 
-     * @param Quote $quote - Quote model instance
+     *
+     * @param  Quote  $quote  - Quote model instance
      * @return Inertia\Inertia - Renders Quotes/Edit.vue with quote data
      */
     public function edit(Quote $quote)
@@ -292,13 +292,13 @@ class QuoteController extends Controller
 
     /**
      * Update the specified quote in storage
-     * 
+     *
      * ARCHITECTURE: Similar to store method - backend calculates all totals
      * VAT RATE: Uses user's input or defaults to 20%
      * SNAPSHOTS: Updates product snapshots with new data
-     * 
-     * @param Request $request - Validated update data
-     * @param Quote $quote - Quote model instance
+     *
+     * @param  Request  $request  - Validated update data
+     * @param  Quote  $quote  - Quote model instance
      * @return Redirect - To quotes index with success message
      */
     public function update(Request $request, Quote $quote)
@@ -340,10 +340,10 @@ class QuoteController extends Controller
 
                 // Update products with new snapshot data
                 $quote->products()->detach(); // Remove old relationships
-                
+
                 foreach ($validated['products'] as $productData) {
                     $product = Product::findOrFail($productData['id_product']);
-                    
+
                     // Calculate line total
                     $lineTotal = $productData['quantity'] * $productData['unit_price'];
                     $totalHt += $lineTotal;
@@ -376,7 +376,7 @@ class QuoteController extends Controller
                     'reduction' => $reduction,
                     'vat_rate' => $vatRate,
                     'vat' => $vat,
-                    'total_ttc' => $totalTtc
+                    'total_ttc' => $totalTtc,
                 ]);
             });
 
@@ -397,11 +397,11 @@ class QuoteController extends Controller
 
     /**
      * Remove the specified quote from storage
-     * 
+     *
      * SAFETY CHECKS: Prevents deletion if quote has associated purchase orders
      * CLEANUP: Removes all related data (products, snapshots, documents)
-     * 
-     * @param Quote $quote - Quote model instance
+     *
+     * @param  Quote  $quote  - Quote model instance
      * @return Redirect - To quotes index with success/error message
      */
     public function destroy(Quote $quote)
@@ -435,14 +435,14 @@ class QuoteController extends Controller
 
     /**
      * Calculate financial totals for preview (AJAX endpoint)
-     * 
+     *
      * PURPOSE: Real-time calculation updates in frontend forms
      * ARCHITECTURE: Frontend sends data, backend calculates, returns results
      * VAT RATE: Accepts decimal values (0.10 for 10%), defaults to 0.20 if not provided
-     * 
-     * @param Request $request - Products array, reduction, and VAT rate
+     *
+     * @param  Request  $request  - Products array, reduction, and VAT rate
      * @return JsonResponse - Calculated totals (total_amount, reduction, vat, total_ttc)
-     * 
+     *
      * USAGE: Called from Create.vue and Edit.vue when products/reduction/VAT rate change
      */
     public function calculateTotals(Request $request)
@@ -481,10 +481,10 @@ class QuoteController extends Controller
 
     /**
      * Get next quote number for preview
-     * 
+     *
      * PURPOSE: Generate unique quote number for frontend display
      * USAGE: Called from Create.vue to show next available quote number
-     * 
+     *
      * @return JsonResponse - Next available quote number
      */
     public function getNextQuoteNumber()
@@ -496,14 +496,14 @@ class QuoteController extends Controller
 
     /**
      * Print view for Quote
-     * 
+     *
      * ARCHITECTURE: Uses snapshot data for historical integrity
      * PURPOSE: Display quote for printing (same data as PDF download)
      * DATA SOURCE: quote_customers and quote_products tables (snapshots)
-     * 
-     * @param Quote $quote - Quote model instance
+     *
+     * @param  Quote  $quote  - Quote model instance
      * @return Inertia\Inertia - Renders Quotes/Print.vue with snapshot data
-     * 
+     *
      * SNAPSHOT LOGIC:
      * - Always uses customerSnapshot (historical customer data)
      * - Always uses quoteProducts (historical product data)
@@ -515,7 +515,7 @@ class QuoteController extends Controller
 
         // ALWAYS use customer snapshot for print - ensures historical data integrity
         $customerSnapshot = $quote->customerSnapshot;
-        if (!$customerSnapshot) {
+        if (! $customerSnapshot) {
             // If no snapshot exists, create one from current customer data
             $customer = $quote->customer;
             if ($customer) {
@@ -569,15 +569,15 @@ class QuoteController extends Controller
 
     /**
      * Download PDF for Quote
-     * 
+     *
      * ARCHITECTURE: Uses snapshot data for historical integrity (same as printView)
      * PURPOSE: Generate PDF file for download
      * DATA SOURCE: quote_customers and quote_products tables (snapshots)
      * TEMPLATE: resources/views/pdf/quote.blade.php
-     * 
-     * @param Quote $quote - Quote model instance
+     *
+     * @param  Quote  $quote  - Quote model instance
      * @return Response - PDF file download
-     * 
+     *
      * IMPORTANT: This method uses the EXACT same data structure as printView
      * to ensure consistency between print view and PDF download.
      */
@@ -588,7 +588,7 @@ class QuoteController extends Controller
 
             // Use customer snapshot for historical accuracy (same as printView)
             $customerSnapshot = $quote->customerSnapshot;
-            if (!$customerSnapshot) {
+            if (! $customerSnapshot) {
                 $customer = $quote->customer;
                 if ($customer) {
                     $customerSnapshot = QuoteCustomer::createWithSnapshot($quote->id_quote, $customer);

@@ -11,6 +11,7 @@ class Admin extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $primaryKey = 'id_admin';
+
     protected $table = 'admins';
 
     protected $fillable = [
@@ -41,9 +42,9 @@ class Admin extends Authenticatable
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:admins,email,' . $id . ',id_admin',
+            'email' => 'required|email|unique:admins,email,'.$id.',id_admin',
             'password' => $id ? 'nullable|min:8' : 'required|min:8',
-            'status' => 'boolean'
+            'status' => 'boolean',
         ];
     }
 

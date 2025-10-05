@@ -35,7 +35,7 @@ class QuoteProduct extends Model
         'total_line_price' => 'decimal:2',
         'min_delivery_day' => 'integer',
         'max_delivery_day' => 'integer',
-        'availability_yrs' => 'integer'
+        'availability_yrs' => 'integer',
     ];
 
     // Base relationships
@@ -86,7 +86,7 @@ class QuoteProduct extends Model
             'max_delivery_day' => $product->max_delivery_day,
             'availability_yrs' => $product->availability_yrs,
             'quantity' => $quantity,
-            'unit_price' => $product->unit_price
+            'unit_price' => $product->unit_price,
         ]);
     }
 
@@ -97,7 +97,7 @@ class QuoteProduct extends Model
             'id_quote' => 'required|exists:quotes,id_quote',
             'id_product' => 'required|exists:products,id_product',
             'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0'
+            'unit_price' => 'required|numeric|min:0',
         ];
     }
 

@@ -21,10 +21,10 @@ class InvoiceSeeder extends Seeder
         $deliveryNotes = DeliveryNote::with(['products', 'aro.purchaseOrder.quote.customer'])
             ->where('status', 'Delivered')
             ->get();
-        
+
         $users = User::where('role', 'Finance')->get();
-        
-        if (!$users->count()) {
+
+        if (! $users->count()) {
             $users = User::all(); // Fallback to all users if no finance users
         }
 
@@ -39,7 +39,7 @@ class InvoiceSeeder extends Seeder
             $customer = $deliveryNote->aro->purchaseOrder->quote->customer;
 
             Invoice::create([
-                'invoice_number' => 'INV-' . date('Y') . str_pad($index + 1, 4, '0', STR_PAD_LEFT),
+                'invoice_number' => 'INV-'.date('Y').str_pad($index + 1, 4, '0', STR_PAD_LEFT),
                 'id_dnp' => $deliveryNote->id_dnp,
                 'customer_po_no' => $deliveryNote->aro->purchaseOrder->customer_po_number,
                 'date_invoice' => $deliveryNote->actual_delivery_date,

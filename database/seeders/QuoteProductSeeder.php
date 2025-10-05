@@ -19,12 +19,12 @@ class QuoteProductSeeder extends Seeder
         foreach ($quotes as $quote) {
             // Add 2-3 random products to each quote
             $randomProducts = $products->random(rand(2, 3));
-            
+
             foreach ($randomProducts as $product) {
                 // Create product snapshot with slight price variations
                 $priceVariation = rand(-5, 5) / 100; // -5% to +5%
                 $adjustedPrice = $product->unit_price * (1 + $priceVariation);
-                
+
                 \App\Models\QuoteProduct::create([
                     'id_quote' => $quote->id_quote,
                     'id_product' => $product->id_product,

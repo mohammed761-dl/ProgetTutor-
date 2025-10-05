@@ -15,7 +15,7 @@ class VerifyCsrfToken extends Middleware
         // Only exclude API routes from CSRF protection
         'api/*',
         // Exclude webhook endpoints if you have any
-        'webhooks/*'
+        'webhooks/*',
     ];
 
     /**

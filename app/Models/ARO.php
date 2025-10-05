@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * ARO (Acknowledgment of Receipt Order) Model
- * 
+ *
  * Represents an acknowledgment document that confirms the receipt of goods
  * from a purchase order. This model tracks delivery status and maintains
  * a record of what was actually received vs. what was ordered.
- * 
+ *
  * Key Features:
  * - Auto-generates ARO numbers in format SNX-ARO-YYYY-XXXXX
  * - Links to PurchaseOrder for order reference
@@ -67,7 +67,7 @@ class ARO extends Model
 
         // Auto-generate ARO number on creation
         static::creating(function ($aro) {
-            if (!$aro->aro_number) {
+            if (! $aro->aro_number) {
                 $aro->aro_number = static::generateAroNumber();
             }
         });
@@ -75,7 +75,7 @@ class ARO extends Model
 
     /**
      * Generate ARO number in format SNX-ARO-YYYY-XXXXX
-     * 
+     *
      * @return string The generated ARO number
      */
     public static function generateAroNumber()

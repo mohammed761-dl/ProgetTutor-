@@ -23,7 +23,7 @@ class CustomerFactory extends Factory
             'phone' => $this->faker->phoneNumber(),
             'address' => $this->faker->address(),
             'performance_flag' => $this->faker->randomElement(['Always on time', 'Small delays', 'Frequent big delays', 'No payment']),
-            'vat_number' => 'VAT'.$this->faker->numerify('#########')
+            'vat_number' => 'VAT'.$this->faker->numerify('#########'),
         ];
     }
 }

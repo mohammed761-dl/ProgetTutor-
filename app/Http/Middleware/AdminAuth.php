@@ -16,10 +16,11 @@ class AdminAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('admin')->check()) {
+        if (! Auth::guard('admin')->check()) {
             if ($request->isXmlHttpRequest() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             }
+
             return redirect()->guest(route('serp-admin-login'));
         }
 

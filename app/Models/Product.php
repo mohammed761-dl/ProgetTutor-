@@ -10,11 +10,14 @@ class Product extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_product';
+
     protected $table = 'products';
 
     // Status constants
     const STATUS_ACTIVE = 'Active';
+
     const STATUS_EOL = 'EOL';
+
     const STATUS_ARCHIVED = 'Archived';
 
     protected $fillable = [
@@ -40,7 +43,7 @@ class Product extends Model
         'min_delivery_day' => 'integer',
         'max_delivery_day' => 'integer',
         'availability_yrs' => 'integer',
-        'status' => 'string'
+        'status' => 'string',
     ];
 
     public function getRouteKeyName()
@@ -64,7 +67,7 @@ class Product extends Model
                 'availability_yrs',
                 'quantity',
                 'unit_price',
-                'total_line_price'
+                'total_line_price',
             ])
             ->withTimestamps();
     }
@@ -151,7 +154,7 @@ class Product extends Model
     public static function rules($id = null)
     {
         return [
-            'product_code' => 'required|string|unique:products,product_code,' . $id . ',id_product',
+            'product_code' => 'required|string|unique:products,product_code,'.$id.',id_product',
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'technical_specs' => 'required|json',
@@ -161,7 +164,7 @@ class Product extends Model
             'max_delivery_day' => 'required|integer|gt:min_delivery_day',
             'availability_yrs' => 'required|integer|min:0',
             'unit_price' => 'required|numeric|min:0',
-            'status' => 'required|in:' . implode(',', [self::STATUS_ACTIVE, self::STATUS_EOL, self::STATUS_ARCHIVED])
+            'status' => 'required|in:'.implode(',', [self::STATUS_ACTIVE, self::STATUS_EOL, self::STATUS_ARCHIVED]),
         ];
     }
 
@@ -179,7 +182,7 @@ class Product extends Model
             'max_delivery_day' => $this->max_delivery_day,
             'availability_yrs' => $this->availability_yrs,
             'unit_price' => $this->unit_price,
-            'snapshot_date' => now()
+            'snapshot_date' => now(),
         ];
     }
 }

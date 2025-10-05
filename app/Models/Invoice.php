@@ -11,6 +11,7 @@ class Invoice extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_invoice';
+
     public $incrementing = true;
 
     // ✅ Add route key name for proper model binding
@@ -66,7 +67,7 @@ class Invoice extends Model
 
             // Get quote data
             $quote = $invoice->quote;
-            
+
             // Copy quote customer snapshot data
             $customerSnapshot = $quote->customerSnapshot;
             $invoice->customer_name = $customerSnapshot->company_name;
@@ -87,7 +88,7 @@ class Invoice extends Model
                     'total_ht' => $quoteProduct->total_line_price,
                     'vat_amount' => $quoteProduct->total_line_price * 0.20, // 20% VAT
                     'reduction' => 0,
-                    'line_total' => $quoteProduct->total_line_price * 1.20 // Including VAT
+                    'line_total' => $quoteProduct->total_line_price * 1.20, // Including VAT
                 ]);
             }
         });

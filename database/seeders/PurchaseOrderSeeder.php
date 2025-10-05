@@ -24,7 +24,7 @@ class PurchaseOrderSeeder extends Seeder
                 'created_by' => $commercialUser?->id_user ?? User::factory(),
                 'status' => 'Approved',
                 'planned_delivery_date' => now()->addDays(30),
-                'remarks' => 'Auto-generated from quote ' . $quote->quote_number,
+                'remarks' => 'Auto-generated from quote '.$quote->quote_number,
             ]);
         }
     }

@@ -11,6 +11,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $primaryKey = 'id_user';
+
     protected $table = 'users';
 
     protected $fillable = [
@@ -28,12 +29,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'role' => 'string'
+        'role' => 'string',
     ];
 
     // Role constants
     const ROLE_CEO = 'CEO';
+
     const ROLE_COMMERCIAL = 'Commercial';
+
     const ROLE_VIEWER = 'Viewer';
 
     public function getRouteKeyName()
@@ -83,9 +86,9 @@ class User extends Authenticatable
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id . ',id_user',
+            'email' => 'required|email|unique:users,email,'.$id.',id_user',
             'password' => $id ? 'nullable|min:8' : 'required|min:8',
-            'role' => 'required|in:' . implode(',', [self::ROLE_CEO, self::ROLE_COMMERCIAL, self::ROLE_VIEWER])
+            'role' => 'required|in:'.implode(',', [self::ROLE_CEO, self::ROLE_COMMERCIAL, self::ROLE_VIEWER]),
         ];
     }
 }

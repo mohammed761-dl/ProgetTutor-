@@ -20,12 +20,12 @@ class QuoteCustomer extends Model
         'phone',
         'address',
         'vat_number',
-        'performance_flag'
+        'performance_flag',
     ];
 
     protected $casts = [
         'address' => 'json',
-        'performance_flag' => 'string'
+        'performance_flag' => 'string',
     ];
 
     // Base relationships
@@ -51,7 +51,7 @@ class QuoteCustomer extends Model
             'phone' => $customer->phone,
             'address' => $customer->address,
             'vat_number' => $customer->vat_number,
-            'performance_flag' => $customer->performance_flag
+            'performance_flag' => $customer->performance_flag,
         ]);
     }
 
@@ -66,7 +66,7 @@ class QuoteCustomer extends Model
             'email' => 'required|email',
             'phone' => 'required|string|max:50',
             'address' => 'required|json',
-            'vat_number' => 'required|string|max:50'
+            'vat_number' => 'required|string|max:50',
         ];
     }
 }

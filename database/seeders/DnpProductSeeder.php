@@ -27,8 +27,8 @@ class DnpProductSeeder extends Seeder
                         'technical_specs' => $poProduct->technical_specs,
                         'quantity_shipped' => $poProduct->quantity, // Using full PO quantity
                         'unit_price' => $poProduct->unit_price,
-                        'serial_numbers' => 'SN' . rand(10000, 99999),
-                        'tracking_code' => 'TRK' . rand(100000, 999999),
+                        'serial_numbers' => 'SN'.rand(10000, 99999),
+                        'tracking_code' => 'TRK'.rand(100000, 999999),
                     ]);
                 }
             }

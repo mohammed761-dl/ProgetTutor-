@@ -13,6 +13,7 @@ class AdminTest extends TestCase
     use RefreshDatabase;
 
     protected $admin;
+
     protected $companyInfo;
 
     protected function setUp(): void
@@ -24,7 +25,7 @@ class AdminTest extends TestCase
             'name' => 'Test Admin',
             'email' => 'admin@test.com',
             'password' => Hash::make('password123'),
-            'status' => 'Active'
+            'status' => 'Active',
         ]);
 
         // Create company info
@@ -45,7 +46,7 @@ class AdminTest extends TestCase
             'signature_email' => 'ceo@testcompany.com',
             'signature_phone' => '+1234567891',
             'general_conditions_url' => 'https://testcompany.com/terms',
-            'vat_number' => 'VAT123456'
+            'vat_number' => 'VAT123456',
         ]);
     }
 
@@ -83,7 +84,7 @@ class AdminTest extends TestCase
             'signature_email' => 'cto@newcompany.com',
             'signature_phone' => '+9876543211',
             'general_conditions_url' => 'https://newcompany.com/terms',
-            'vat_number' => 'VAT987654'
+            'vat_number' => 'VAT987654',
         ];
 
         $response = $this->put('/serp-admin/company-info', $updatedData);
@@ -92,7 +93,7 @@ class AdminTest extends TestCase
         $this->assertDatabaseHas('company_info', [
             'name' => 'Updated Company',
             'email' => 'new@company.com',
-            'vat_number' => 'VAT987654'
+            'vat_number' => 'VAT987654',
         ]);
     }
 
@@ -103,7 +104,7 @@ class AdminTest extends TestCase
 
         $updatedData = [
             'name' => 'Updated Admin',
-            'email' => 'updated@admin.com'
+            'email' => 'updated@admin.com',
         ];
 
         $response = $this->put('/serp-admin/profile', $updatedData);
@@ -111,7 +112,7 @@ class AdminTest extends TestCase
         $response->assertRedirect('/Profile');
         $this->assertDatabaseHas('admins', [
             'name' => 'Updated Admin',
-            'email' => 'updated@admin.com'
+            'email' => 'updated@admin.com',
         ]);
     }
 
@@ -123,11 +124,11 @@ class AdminTest extends TestCase
         $response = $this->put('/serp-admin/change-password', [
             'current_password' => 'password123',
             'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123'
+            'password_confirmation' => 'newpassword123',
         ]);
 
         $response->assertRedirect('/Profile');
-        
+
         // Verify password was changed
         $this->admin->refresh();
         $this->assertTrue(Hash::check('newpassword123', $this->admin->password));
@@ -141,11 +142,11 @@ class AdminTest extends TestCase
         $response = $this->put('/serp-admin/change-password', [
             'current_password' => 'wrongpassword',
             'password' => 'newpassword123',
-            'password_confirmation' => 'newpassword123'
+            'password_confirmation' => 'newpassword123',
         ]);
 
         $response->assertSessionHasErrors('current_password');
-        
+
         // Verify password was not changed
         $this->admin->refresh();
         $this->assertTrue(Hash::check('password123', $this->admin->password));
@@ -159,18 +160,18 @@ class AdminTest extends TestCase
             'name' => 'Other Admin',
             'email' => 'other@admin.com',
             'password' => Hash::make('password123'),
-            'status' => 'Active'
+            'status' => 'Active',
         ]);
 
         $this->actingAs($this->admin, 'admin');
 
         $response = $this->put('/serp-admin/profile', [
             'name' => 'Updated Admin',
-            'email' => 'other@admin.com' // Try to use existing email
+            'email' => 'other@admin.com', // Try to use existing email
         ]);
 
         $response->assertInvalid(['email']);
-        
+
         // Verify email was not changed
         $this->admin->refresh();
         $this->assertEquals('admin@test.com', $this->admin->email);
@@ -193,7 +194,7 @@ class AdminTest extends TestCase
             // Missing required fields
             'name' => '',
             'email' => 'invalid-email',
-            'warranty_duration' => 'invalid'
+            'warranty_duration' => 'invalid',
         ]);
 
         $response->assertInvalid(['name', 'email', 'warranty_duration']);
@@ -206,7 +207,7 @@ class AdminTest extends TestCase
 
         $response = $this->put('/serp-admin/profile', [
             'name' => '', // Empty name
-            'email' => 'invalid-email' // Invalid email
+            'email' => 'invalid-email', // Invalid email
         ]);
 
         $response->assertInvalid(['name', 'email']);
@@ -220,7 +221,7 @@ class AdminTest extends TestCase
         $response = $this->put('/serp-admin/change-password', [
             'current_password' => 'password123',
             'password' => 'short', // Too short
-            'password_confirmation' => 'different' // Doesn't match
+            'password_confirmation' => 'different', // Doesn't match
         ]);
 
         $response->assertInvalid(['password']);

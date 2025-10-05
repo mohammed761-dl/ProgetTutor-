@@ -14,8 +14,9 @@ class UpdateExistingQuotesVatRateSeeder extends Seeder
     public function run(): void
     {
         // Check if vat_rate column exists
-        if (!Schema::hasColumn('quotes', 'vat_rate')) {
+        if (! Schema::hasColumn('quotes', 'vat_rate')) {
             $this->command->error('vat_rate column does not exist. Please run the migration first.');
+
             return;
         }
 
@@ -36,31 +37,31 @@ class UpdateExistingQuotesVatRateSeeder extends Seeder
             try {
                 // Calculate VAT rate from existing data
                 $totalAfterReduction = $quote->total_amount - $quote->reduction;
-                
+
                 if ($totalAfterReduction > 0 && $quote->vat > 0) {
                     $calculatedVatRate = $quote->vat / $totalAfterReduction;
-                    
+
                     // Update the quote with calculated VAT rate
                     DB::table('quotes')
                         ->where('id_quote', $quote->id_quote)
                         ->update(['vat_rate' => $calculatedVatRate]);
-                    
+
                     $updatedCount++;
-                    $this->command->info("Updated quote {$quote->quote_number}: VAT rate = " . round($calculatedVatRate * 100, 1) . "%");
+                    $this->command->info("Updated quote {$quote->quote_number}: VAT rate = ".round($calculatedVatRate * 100, 1).'%');
                 }
             } catch (\Exception $e) {
-                $this->command->error("Error updating quote {$quote->quote_number}: " . $e->getMessage());
+                $this->command->error("Error updating quote {$quote->quote_number}: ".$e->getMessage());
             }
         }
 
         $this->command->info("Successfully updated {$updatedCount} quotes.");
-        
+
         // Also update quotes that have 0 VAT to have 0 VAT rate
         $zeroVatQuotes = DB::table('quotes')
             ->whereNull('vat_rate')
             ->where('vat', 0)
             ->update(['vat_rate' => 0]);
-            
+
         if ($zeroVatQuotes > 0) {
             $this->command->info("Updated {$zeroVatQuotes} quotes with 0 VAT to have 0 VAT rate.");
         }

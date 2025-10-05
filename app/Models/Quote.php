@@ -2,25 +2,30 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class Quote extends Model
 {
     use HasFactory;
 
     protected $primaryKey = 'id_quote';
+
     protected $table = 'quotes';
 
     // Status constants
     const STATUS_SENT_SAME_DAY = 'Sent same day';
+
     const STATUS_SENT_2_3_DAYS = 'Sent within 2-3 days';
+
     const STATUS_SENT_4_PLUS_DAYS = 'Sent after 4+ days';
 
     // Currency constants
     const CURRENCY_EUR = 'EUR';
+
     const CURRENCY_USD = 'USD';
+
     const CURRENCY_MAD = 'MAD';
 
     protected $fillable = [
@@ -99,7 +104,7 @@ class Quote extends Model
                 'availability_yrs',
                 'quantity',
                 'unit_price',
-                'total_line_price'
+                'total_line_price',
             ])
             ->withTimestamps();
     }
@@ -145,19 +150,21 @@ class Quote extends Model
     {
         $prefix = 'SNXQT';
         $year = date('Y');
-        
-        $lastQuote = self::where('quote_number', 'like', $prefix . $year . '%')
+
+        $lastQuote = self::where('quote_number', 'like', $prefix.$year.'%')
             ->orderBy('id_quote', 'desc')
             ->first();
 
         $number = $lastQuote ? intval(substr($lastQuote->quote_number, -5)) + 1 : 1;
-        return sprintf("%s%s%05d", $prefix, $year, $number);
+
+        return sprintf('%s%s%05d', $prefix, $year, $number);
     }
 
     // Financial calculations
     public function calculateTotalHT()
     {
         $this->load('quoteProducts');
+
         return $this->quoteProducts->sum('total_line_price');
     }
 
@@ -177,6 +184,7 @@ class Quote extends Model
         $this->vat = $this->calculateVAT($vatRate);
         $this->total_ttc = $this->calculateTotalTTC();
         $this->total_amount = $this->total_ttc;
+
         return $this->save();
     }
 
@@ -207,19 +215,19 @@ class Quote extends Model
             'id_user' => 'required|exists:users,id_user',
             'date_quote' => 'required|date',
             'valid_until' => 'required|date|after:date_quote',
-            'status' => 'required|in:' . implode(',', [
+            'status' => 'required|in:'.implode(',', [
                 self::STATUS_SENT_SAME_DAY,
                 self::STATUS_SENT_2_3_DAYS,
-                self::STATUS_SENT_4_PLUS_DAYS
+                self::STATUS_SENT_4_PLUS_DAYS,
             ]),
-            'currency' => 'required|in:' . implode(',', [
+            'currency' => 'required|in:'.implode(',', [
                 self::CURRENCY_EUR,
                 self::CURRENCY_USD,
-                self::CURRENCY_MAD
+                self::CURRENCY_MAD,
             ]),
             'products' => 'required|array|min:1',
             'products.*.id_product' => 'required|exists:products,id_product',
-            'products.*.quantity' => 'required|integer|min:1'
+            'products.*.quantity' => 'required|integer|min:1',
         ];
     }
 
@@ -239,10 +247,10 @@ class Quote extends Model
             }
         });
 
-    // static::created(function ($quote) {
-    //     // Create both product and customer snapshots
-    //     $quote->createProductSnapshots();
-    //     QuoteCustomer::createWithSnapshot($quote->id_quote, $quote->customer);
-    // });
+        // static::created(function ($quote) {
+        //     // Create both product and customer snapshots
+        //     $quote->createProductSnapshots();
+        //     QuoteCustomer::createWithSnapshot($quote->id_quote, $quote->customer);
+        // });
     }
 }

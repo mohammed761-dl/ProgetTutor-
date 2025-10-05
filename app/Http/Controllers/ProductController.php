@@ -64,7 +64,7 @@ class ProductController extends Controller
             $sortField = $request->get('sort', 'created_at');
             $sortDirection = $request->get('direction', 'desc');
             $allowedSortFields = ['product_code', 'name', 'status', 'unit_price', 'created_at'];
-            
+
             if (in_array($sortField, $allowedSortFields)) {
                 $query->orderBy($sortField, $sortDirection);
             }
@@ -82,8 +82,8 @@ class ProductController extends Controller
                     'current_page' => $products->currentPage(),
                     'last_page' => $products->lastPage(),
                     'per_page' => $products->perPage(),
-                    'total' => $products->total()
-                ]
+                    'total' => $products->total(),
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching products: '.$e->getMessage());
@@ -96,8 +96,8 @@ class ProductController extends Controller
                     'current_page' => 1,
                     'last_page' => 1,
                     'per_page' => 10,
-                    'total' => 0
-                ]
+                    'total' => 0,
+                ],
             ]);
         }
     }

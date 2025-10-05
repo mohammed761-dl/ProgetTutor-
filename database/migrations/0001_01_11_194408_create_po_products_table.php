@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('payment_terms')->nullable();
             $table->integer('min_delivery_day');
             $table->integer('max_delivery_day');
-            
+
             // PO-specific fields
             $table->integer('quantity'); // Cannot exceed quote quantity
             $table->decimal('unit_price', 15, 2); // From quote
@@ -34,13 +34,13 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('id_po')->references('id_po')->on('purchase_orders')
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
             $table->foreign('quote_product_id')->references('id')->on('quote_products')
-                  ->onDelete('restrict');
+                ->onDelete('restrict');
 
             // Unique constraint
             $table->unique(['id_po', 'quote_product_id']);
-            
+
             // Indexes for performance
             $table->index(['id_po', 'quote_product_id']);
             $table->index('product_code');

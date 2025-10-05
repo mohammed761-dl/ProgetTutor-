@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * PoProduct Model
- * 
+ *
  * Represents products within a Purchase Order (PO).
  * This model stores a snapshot of product information at the time of PO creation,
  * including pricing, quantities, and delivery terms.
- * 
+ *
  * Key Features:
  * - Links to PurchaseOrder via id_po
  * - Links to QuoteProduct via quote_product_id for reference
@@ -43,7 +43,7 @@ class PoProduct extends Model
         'min_delivery_day',         // Minimum delivery time in days
         'max_delivery_day',         // Maximum delivery time in days
         'quantity',                 // Quantity ordered
-        'unit_price'                // Unit price at time of PO
+        'unit_price',                // Unit price at time of PO
     ];
 
     /**
@@ -81,12 +81,12 @@ class PoProduct extends Model
 
     /**
      * Create a new PO product with snapshot data from a QuoteProduct.
-     * 
+     *
      * This method ensures that PO products maintain historical accuracy
      * by capturing the state of quote products at the time of PO creation.
-     * 
-     * @param int $poId The ID of the purchase order
-     * @param QuoteProduct $quoteProduct The quote product to snapshot
+     *
+     * @param  int  $poId  The ID of the purchase order
+     * @param  QuoteProduct  $quoteProduct  The quote product to snapshot
      * @return PoProduct The created PO product instance
      */
     public static function createWithSnapshot($poId, QuoteProduct $quoteProduct)

@@ -122,100 +122,100 @@ class InvoiceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'id_quote' => 'required|exists:quotes,id_quote',
-        'date_invoice' => 'required|date',
-        'payment_status' => 'required|string',
-        'date_payment' => 'nullable|date',
-        'currency' => 'required|in:EUR,USD,GBP',
-        'payment_terms' => 'nullable|string',
-        'total_excl_vat' => 'nullable|numeric',
-        'vat_amount' => 'nullable|numeric',
-        'total_incl_vat' => 'nullable|numeric',
-        'customer_vat_number' => 'nullable|string',
-        'customer_contact_person' => 'nullable|string',
-        'customer_email' => 'nullable|email',
-        'customer_phone' => 'nullable|string',
-        'supplier_vat_number' => 'nullable|string',
-        'supplier_iso_certification' => 'nullable|string',
-        'notes' => 'nullable|string',
-    ]);
-
-    DB::transaction(function () use ($validated) {
-        // Get quote and customer info
-        $quote = Quote::with(['customer', 'quoteProducts.product'])->findOrFail($validated['id_quote']);
-        $customer = $quote->customer;
-
-        // Create invoice with snapshot data
-        $invoice = Invoice::create([
-            'id_quote' => $validated['id_quote'],
-            'date_invoice' => $validated['date_invoice'],
-            'issue_date' => $validated['date_invoice'],
-            'due_date' => $validated['date_payment'] ?? now()->addDays(30),
-            'payment_status' => $validated['payment_status'],
-            'date_payment' => $validated['date_payment'],
-            'id_user' => auth()->id(),
-            'created_by' => auth()->id(),
-            'currency' => $validated['currency'],
-            'payment_terms' => $validated['payment_terms'],
-            'total_excl_vat' => $validated['total_excl_vat'] ?? 0,
-            'vat_amount' => $validated['vat_amount'] ?? 0,
-            'total_incl_vat' => $validated['total_incl_vat'] ?? 0,
-            'sub_total' => $validated['total_excl_vat'] ?? 0,
-            'tax_total' => $validated['vat_amount'] ?? 0,
-            'grand_total' => $validated['total_incl_vat'] ?? 0,
-            'customer_name' => $customer->company_name,
-            'customer_address' => $customer->address,
-            'customer_vat' => $validated['customer_vat_number'] ?? $customer->vat_number,
-            'customer_contact_person' => $validated['customer_contact_person'] ?? $customer->contact_name,
-            'customer_email' => $validated['customer_email'] ?? $customer->email,
-            'customer_phone' => $validated['customer_phone'] ?? $customer->phone,
-            'supplier_vat_number' => $validated['supplier_vat_number'],
-            'supplier_iso_certification' => $validated['supplier_iso_certification'],
-            'notes' => $validated['notes'],
-            'status' => 'Draft',
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'id_quote' => 'required|exists:quotes,id_quote',
+            'date_invoice' => 'required|date',
+            'payment_status' => 'required|string',
+            'date_payment' => 'nullable|date',
+            'currency' => 'required|in:EUR,USD,GBP',
+            'payment_terms' => 'nullable|string',
+            'total_excl_vat' => 'nullable|numeric',
+            'vat_amount' => 'nullable|numeric',
+            'total_incl_vat' => 'nullable|numeric',
+            'customer_vat_number' => 'nullable|string',
+            'customer_contact_person' => 'nullable|string',
+            'customer_email' => 'nullable|email',
+            'customer_phone' => 'nullable|string',
+            'supplier_vat_number' => 'nullable|string',
+            'supplier_iso_certification' => 'nullable|string',
+            'notes' => 'nullable|string',
         ]);
 
-        // Ensure the invoice is saved and has an ID
-        $invoice->refresh();
-        Log::info('Invoice ID after create', ['id_invoice' => $invoice->id_invoice, 'id' => $invoice->id]);
-       \Log::info('Invoice PK', ['id_invoice' => $invoice->id_invoice, 'id' => $invoice->id]);
-        // Add invoice products with snapshot data from quote
-        foreach ($quote->quoteProducts as $quoteProduct) {
-            $unitPrice = $quoteProduct->unit_price;
-            $quantity = $quoteProduct->quantity;
-            $totalHt = $unitPrice * $quantity;
-            $vatAmount = $totalHt * 0.21; // 21% VAT
-            $lineTotal = $totalHt + $vatAmount;
+        DB::transaction(function () use ($validated) {
+            // Get quote and customer info
+            $quote = Quote::with(['customer', 'quoteProducts.product'])->findOrFail($validated['id_quote']);
+            $customer = $quote->customer;
 
-            // Use $invoice->id_invoice if your primary key is id_invoice, or $invoice->id if it's id
-            \DB::table('invoice_quote_product')->insert([
-                'invoice_id' => $invoice->id_invoice, // or $invoice->id
-                'quote_product_id' => $quoteProduct->id,
-                'name' => $quoteProduct->product->name,
-                'product_code' => $quoteProduct->product->product_code,
-                'description' => $quoteProduct->product->description,
-                'unit_price' => $unitPrice,
-                'quantity_invoiced' => $quantity,
-                'total_ht' => $totalHt,
-                'vat_amount' => $vatAmount,
-                'reduction' => 0,
-                'line_total' => $lineTotal,
-                'created_at' => now(),
-                'updated_at' => now(),
+            // Create invoice with snapshot data
+            $invoice = Invoice::create([
+                'id_quote' => $validated['id_quote'],
+                'date_invoice' => $validated['date_invoice'],
+                'issue_date' => $validated['date_invoice'],
+                'due_date' => $validated['date_payment'] ?? now()->addDays(30),
+                'payment_status' => $validated['payment_status'],
+                'date_payment' => $validated['date_payment'],
+                'id_user' => auth()->id(),
+                'created_by' => auth()->id(),
+                'currency' => $validated['currency'],
+                'payment_terms' => $validated['payment_terms'],
+                'total_excl_vat' => $validated['total_excl_vat'] ?? 0,
+                'vat_amount' => $validated['vat_amount'] ?? 0,
+                'total_incl_vat' => $validated['total_incl_vat'] ?? 0,
+                'sub_total' => $validated['total_excl_vat'] ?? 0,
+                'tax_total' => $validated['vat_amount'] ?? 0,
+                'grand_total' => $validated['total_incl_vat'] ?? 0,
+                'customer_name' => $customer->company_name,
+                'customer_address' => $customer->address,
+                'customer_vat' => $validated['customer_vat_number'] ?? $customer->vat_number,
+                'customer_contact_person' => $validated['customer_contact_person'] ?? $customer->contact_name,
+                'customer_email' => $validated['customer_email'] ?? $customer->email,
+                'customer_phone' => $validated['customer_phone'] ?? $customer->phone,
+                'supplier_vat_number' => $validated['supplier_vat_number'],
+                'supplier_iso_certification' => $validated['supplier_iso_certification'],
+                'notes' => $validated['notes'],
+                'status' => 'Draft',
             ]);
-        }
 
-        // Calculate and update totals
-        $invoice->calculateTotals();
-        $invoice->save();
-    });
+            // Ensure the invoice is saved and has an ID
+            $invoice->refresh();
+            Log::info('Invoice ID after create', ['id_invoice' => $invoice->id_invoice, 'id' => $invoice->id]);
+            \Log::info('Invoice PK', ['id_invoice' => $invoice->id_invoice, 'id' => $invoice->id]);
+            // Add invoice products with snapshot data from quote
+            foreach ($quote->quoteProducts as $quoteProduct) {
+                $unitPrice = $quoteProduct->unit_price;
+                $quantity = $quoteProduct->quantity;
+                $totalHt = $unitPrice * $quantity;
+                $vatAmount = $totalHt * 0.21; // 21% VAT
+                $lineTotal = $totalHt + $vatAmount;
 
-    return redirect()->route('invoices.index')->with('success', 'Invoice created successfully!');
-}
+                // Use $invoice->id_invoice if your primary key is id_invoice, or $invoice->id if it's id
+                \DB::table('invoice_quote_product')->insert([
+                    'invoice_id' => $invoice->id_invoice, // or $invoice->id
+                    'quote_product_id' => $quoteProduct->id,
+                    'name' => $quoteProduct->product->name,
+                    'product_code' => $quoteProduct->product->product_code,
+                    'description' => $quoteProduct->product->description,
+                    'unit_price' => $unitPrice,
+                    'quantity_invoiced' => $quantity,
+                    'total_ht' => $totalHt,
+                    'vat_amount' => $vatAmount,
+                    'reduction' => 0,
+                    'line_total' => $lineTotal,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            // Calculate and update totals
+            $invoice->calculateTotals();
+            $invoice->save();
+        });
+
+        return redirect()->route('invoices.index')->with('success', 'Invoice created successfully!');
+    }
+
     /**
      * Display the specified resource.
      */

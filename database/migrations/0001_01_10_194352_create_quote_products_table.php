@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_quote');
             $table->unsignedBigInteger('id_product');
-            
+
             // Product snapshot data (frozen at quote creation)
             $table->string('product_code');
             $table->string('name');
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->integer('min_delivery_day');
             $table->integer('max_delivery_day');
             $table->integer('availability_yrs');
-            
+
             // Quote-specific data
             $table->integer('quantity');
             $table->decimal('unit_price', 15, 2); // Price at quote time
@@ -36,11 +36,11 @@ return new class extends Migration
             // Foreign key constraints
             $table->foreign('id_quote')->references('id_quote')->on('quotes');
             $table->foreign('id_product')->references('id_product')->on('products')
-                  ->onDelete('restrict'); // Prevent product deletion if used in quotes
+                ->onDelete('restrict'); // Prevent product deletion if used in quotes
 
             // Unique constraint to prevent duplicate products in same quote
             $table->unique(['id_quote', 'id_product']);
-            
+
             // Indexes for performance
             $table->index(['id_quote', 'id_product']);
             $table->index('product_code');

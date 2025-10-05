@@ -19,10 +19,10 @@ class AuthController extends Controller
         if (Auth::guard('admin')->check()) {
             return redirect()->intended('/admin/dashboard');
         }
-        
+
         return Inertia::render('Auth/AdminLogin', [
             'status' => session('status'),
-            'errors' => session('errors') ? session('errors')->getBag('default')->getMessages() : (object)[],
+            'errors' => session('errors') ? session('errors')->getBag('default')->getMessages() : (object) [],
         ]);
     }
 
@@ -35,7 +35,7 @@ class AuthController extends Controller
 
         if (Auth::guard('admin')->attempt($request->only('email', 'password'), $request->boolean('remember'))) {
             $request->session()->regenerate();
-            
+
             return redirect()->intended('/admin/dashboard');
         }
 
@@ -47,14 +47,14 @@ class AuthController extends Controller
     public function AdminLogout(Request $request)
     {
         Auth::guard('admin')->logout();
-        
+
         // Clear and regenerate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         // Clear any remember me cookies
         \Cookie::forget('admin_remember');
-        
+
         return redirect()->route('serp-admin-login')->with('status', 'Logged out successfully');
     }
 

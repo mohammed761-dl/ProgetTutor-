@@ -28,7 +28,7 @@ class ProductFactory extends Factory
             'max_delivery_day' => $this->faker->numberBetween($minDelivery + 1, $minDelivery + 20),
             'availability_yrs' => $this->faker->numberBetween(1, 5),
             'status' => $this->faker->randomElement(['Active', 'EOL', 'Archived']),
-            'unit_price' => $this->faker->randomFloat(2, 10, 1000)
+            'unit_price' => $this->faker->randomFloat(2, 10, 1000),
         ];
     }
 }

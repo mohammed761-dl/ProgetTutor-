@@ -4,8 +4,8 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AroController;
-use App\Http\Controllers\CsrfController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CsrfController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeliveryNoteController;
@@ -175,4 +175,4 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/invoice-products/{invoiceProduct}', [InvoiceProductController::class, 'update']);
     Route::delete('/invoice-products/{invoiceProduct}', [InvoiceProductController::class, 'destroy']);
 
-   });
+});

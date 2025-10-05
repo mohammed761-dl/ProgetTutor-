@@ -120,11 +120,11 @@ class DeliveryNoteController extends Controller
 
         // Get the ARO with its relationships
         $aro = ARO::with([
-            'purchaseOrder.quote', 
+            'purchaseOrder.quote',
             'products.quoteProduct.product',
-            'purchaseOrder.poProducts'
+            'purchaseOrder.poProducts',
         ])->findOrFail($validated['id_aro']);
-        
+
         $validated['id_po'] = $aro->purchaseOrder->id_po;
         $validated['id_quote'] = $aro->purchaseOrder->quote->id_quote;
 
@@ -134,14 +134,18 @@ class DeliveryNoteController extends Controller
         if ($aro) {
             // Create DnpProduct records with snapshot data from ARO products
             foreach ($aro->products as $aroProduct) {
-                if (!$aroProduct->quoteProduct) continue; // Skip if no quote product
-                
+                if (! $aroProduct->quoteProduct) {
+                    continue;
+                } // Skip if no quote product
+
                 // Find the corresponding PO product
                 $poProduct = $aro->purchaseOrder->poProducts()
                     ->where('quote_product_id', $aroProduct->quote_product_id)
                     ->first();
-                
-                if (!$poProduct) continue; // Skip if no PO product found
+
+                if (! $poProduct) {
+                    continue;
+                } // Skip if no PO product found
 
                 $deliveryNote->products()->create([
                     'aro_product_id' => $aroProduct->id,
@@ -321,7 +325,7 @@ class DeliveryNoteController extends Controller
     {
         try {
             $deliveryNote = DeliveryNote::findOrFail($id);
-            
+
             // Check if DN is already delivered
             if ($deliveryNote->status === 'Delivered') {
                 return back()->with('error', 'Cannot delete delivered Delivery Notes.');
@@ -330,7 +334,7 @@ class DeliveryNoteController extends Controller
             \DB::transaction(function () use ($deliveryNote) {
                 // Delete all product snapshots first
                 $deliveryNote->products()->delete();
-                
+
                 // Delete the delivery note
                 $deliveryNote->delete();
 
@@ -343,10 +347,10 @@ class DeliveryNoteController extends Controller
         } catch (\Exception $e) {
             Log::error('Error deleting Delivery Note: '.$e->getMessage(), [
                 'id' => $id,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
-            return back()->with('error', 'Failed to delete the delivery note. ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete the delivery note. '.$e->getMessage());
         }
     }
 
@@ -457,11 +461,12 @@ class DeliveryNoteController extends Controller
             ];
 
             $pdf = Pdf::loadView('pdf.delivery-note', $data);
-            
+
             return $pdf->download('DeliveryNote-'.$deliveryNote->dnp_number.'.pdf');
 
         } catch (\Exception $e) {
             Log::error('Error generating Delivery Note PDF: '.$e->getMessage());
+
             return back()->with('error', 'Error generating PDF. Please try again.');
         }
     }

@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * AroProduct Model
- * 
+ *
  * Represents individual products within an ARO (Acknowledgment of Receipt Order).
  * This model tracks what was actually received for each product from the original quote,
  * including quantities, remarks, and pricing information.
- * 
+ *
  * Key Features:
  * - Links ARO to specific quote products
  * - Tracks actual quantity received vs. ordered
@@ -35,7 +35,7 @@ class AroProduct extends Model
         'id_aro',              // ARO ID
         'quote_product_id',    // Reference to original quote product
         'quantity_received',   // Actual quantity received
-        'remarks'              // Notes about the received item
+        'remarks',              // Notes about the received item
     ];
 
     /**
@@ -79,7 +79,7 @@ class AroProduct extends Model
 
     /**
      * Get the confirmed quantity received.
-     * 
+     *
      * @return int The quantity received
      */
     public function quantity_confirmed()
@@ -89,7 +89,7 @@ class AroProduct extends Model
 
     /**
      * Get the unit price from the quote product.
-     * 
+     *
      * @return float The unit price
      */
     public function unit_price()

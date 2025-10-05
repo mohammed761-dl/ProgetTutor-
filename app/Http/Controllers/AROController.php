@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ARO;
-use App\Models\PurchaseOrder;
 use App\Models\AroProduct;
+use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +13,7 @@ use Inertia\Inertia;
 
 /**
  * ARO (Acknowledgment of Receipt Order) Controller
- * 
+ *
  * Handles all ARO-related operations including:
  * - Creating and managing AROs
  * - Linking AROs to Purchase Orders
@@ -35,12 +35,12 @@ class AROController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('aro_number', 'like', "%{$search}%")
-                  ->orWhereHas('purchaseOrder', function ($pq) use ($search) {
-                      $pq->where('po_number', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('purchaseOrder.customer', function ($cq) use ($search) {
-                      $cq->where('company_name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('purchaseOrder', function ($pq) use ($search) {
+                        $pq->where('po_number', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('purchaseOrder.customer', function ($cq) use ($search) {
+                        $cq->where('company_name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -61,7 +61,7 @@ class AROController extends Controller
 
         return Inertia::render('ARO/Index', [
             'aros' => $aros,
-            'filters' => $request->only(['search', 'status', 'date_from', 'date_to'])
+            'filters' => $request->only(['search', 'status', 'date_from', 'date_to']),
         ]);
     }
 
@@ -77,7 +77,7 @@ class AROController extends Controller
             ->get();
 
         return Inertia::render('ARO/Create', [
-            'purchaseOrders' => $purchaseOrders
+            'purchaseOrders' => $purchaseOrders,
         ]);
     }
 
@@ -94,7 +94,7 @@ class AROController extends Controller
             'products' => 'required|array|min:1',
             'products.*.quote_product_id' => 'required|exists:quote_products,id',
             'products.*.quantity_received' => 'required|integer|min:0',
-            'products.*.remarks' => 'nullable|string|max:500'
+            'products.*.remarks' => 'nullable|string|max:500',
         ]);
 
         try {
@@ -106,7 +106,7 @@ class AROController extends Controller
                 'date_aro' => $request->date_aro,
                 'status' => $request->status,
                 'remarks' => $request->remarks,
-                'created_by' => Auth::id()
+                'created_by' => Auth::id(),
             ]);
 
             // Create ARO products
@@ -115,7 +115,7 @@ class AROController extends Controller
                     'id_aro' => $aro->id_aro,
                     'quote_product_id' => $product['quote_product_id'],
                     'quantity_received' => $product['quantity_received'],
-                    'remarks' => $product['remarks'] ?? null
+                    'remarks' => $product['remarks'] ?? null,
                 ]);
             }
 
@@ -129,8 +129,8 @@ class AROController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error creating ARO: ' . $e->getMessage());
-            
+            Log::error('Error creating ARO: '.$e->getMessage());
+
             return back()->withInput()
                 ->with('error', 'Error creating ARO. Please try again.');
         }
@@ -145,11 +145,11 @@ class AROController extends Controller
             'purchaseOrder.customer',
             'purchaseOrder.poProducts.quoteProduct',
             'creator',
-            'aroProducts'
+            'aroProducts',
         ]);
 
         return Inertia::render('ARO/Show', [
-            'aro' => $aro
+            'aro' => $aro,
         ]);
     }
 
@@ -162,7 +162,7 @@ class AROController extends Controller
             'purchaseOrder.customer',
             'purchaseOrder.poProducts.quoteProduct',
             'creator',
-            'aroProducts'
+            'aroProducts',
         ]);
 
         $purchaseOrders = PurchaseOrder::with(['customer', 'quote.customer'])
@@ -172,7 +172,7 @@ class AROController extends Controller
 
         return Inertia::render('ARO/Edit', [
             'aro' => $aro,
-            'purchaseOrders' => $purchaseOrders
+            'purchaseOrders' => $purchaseOrders,
         ]);
     }
 
@@ -189,7 +189,7 @@ class AROController extends Controller
             'products' => 'required|array|min:1',
             'products.*.quote_product_id' => 'required|exists:quote_products,id',
             'products.*.quantity_received' => 'required|integer|min:0',
-            'products.*.remarks' => 'nullable|string|max:500'
+            'products.*.remarks' => 'nullable|string|max:500',
         ]);
 
         try {
@@ -200,7 +200,7 @@ class AROController extends Controller
                 'id_po' => $request->id_po,
                 'date_aro' => $request->date_aro,
                 'status' => $request->status,
-                'remarks' => $request->remarks
+                'remarks' => $request->remarks,
             ]);
 
             // Delete existing ARO products and recreate
@@ -212,7 +212,7 @@ class AROController extends Controller
                     'id_aro' => $aro->id_aro,
                     'quote_product_id' => $product['quote_product_id'],
                     'quantity_received' => $product['quantity_received'],
-                    'remarks' => $product['remarks'] ?? null
+                    'remarks' => $product['remarks'] ?? null,
                 ]);
             }
 
@@ -226,8 +226,8 @@ class AROController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error updating ARO: ' . $e->getMessage());
-            
+            Log::error('Error updating ARO: '.$e->getMessage());
+
             return back()->withInput()
                 ->with('error', 'Error updating ARO. Please try again.');
         }
@@ -243,7 +243,7 @@ class AROController extends Controller
 
             // Delete ARO products first
             $aro->aroProducts()->delete();
-            
+
             // Delete ARO
             $aro->delete();
 
@@ -257,8 +257,8 @@ class AROController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error deleting ARO: ' . $e->getMessage());
-            
+            Log::error('Error deleting ARO: '.$e->getMessage());
+
             return back()->with('error', 'Error deleting ARO. Please try again.');
         }
     }
@@ -273,7 +273,7 @@ class AROController extends Controller
                 'purchaseOrder.customer',
                 'purchaseOrder.poProducts.quoteProduct',
                 'creator',
-                'aroProducts'
+                'aroProducts',
             ]);
 
             // Format data for PDF generation
@@ -281,11 +281,12 @@ class AROController extends Controller
 
             // Generate PDF using your preferred library
             // Example: return PDF::loadView('pdf.aro', $formattedAro)->download("ARO-{$aro->aro_number}.pdf");
-            
+
             return response()->json(['message' => 'PDF generation not implemented yet']);
 
         } catch (\Exception $e) {
-            Log::error('Error generating ARO PDF: ' . $e->getMessage());
+            Log::error('Error generating ARO PDF: '.$e->getMessage());
+
             return back()->with('error', 'Error generating PDF. Please try again.');
         }
     }
@@ -308,11 +309,12 @@ class AROController extends Controller
             $formattedAro = $this->formatAroForPrint($aro);
 
             return Inertia::render('ARO/Print', [
-                'aro' => $formattedAro
+                'aro' => $formattedAro,
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error generating ARO print view: ' . $e->getMessage());
+            Log::error('Error generating ARO print view: '.$e->getMessage());
+
             return back()->with('error', 'Error generating print view. Please try again.');
         }
     }
@@ -323,7 +325,7 @@ class AROController extends Controller
     private function updatePurchaseOrderStatus(PurchaseOrder $purchaseOrder)
     {
         $aros = $purchaseOrder->aros;
-        
+
         if ($aros->isEmpty()) {
             return;
         }
@@ -377,9 +379,9 @@ class AROController extends Controller
                 'products' => $aro->purchaseOrder->poProducts->map(function ($poProduct) use ($aro) {
                     $aroProduct = $aro->aroProducts->firstWhere('quote_product_id', $poProduct->quote_product_id);
                     $quoteProduct = $poProduct->quoteProduct;
-                    
+
                     // Handle case where quoteProduct might be null
-                    if (!$quoteProduct) {
+                    if (! $quoteProduct) {
                         return [
                             'id' => null,
                             'product_code' => $poProduct->product_code ?? 'N/A',
@@ -391,7 +393,7 @@ class AROController extends Controller
                             'remarks' => $aroProduct->remarks ?? null,
                         ];
                     }
-                    
+
                     return [
                         'id' => $quoteProduct->id_product ?? null,
                         'product_code' => $quoteProduct->product_code ?? $poProduct->product_code ?? 'N/A',

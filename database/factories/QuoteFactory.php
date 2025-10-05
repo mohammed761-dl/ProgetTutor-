@@ -20,7 +20,7 @@ class QuoteFactory extends Factory
         $validUntil = $dateQuote->copy()->addMonth();
 
         return [
-            'quote_number' => 'QT-' . $dateQuote->format('Ym') . '-' . fake()->unique()->numberBetween(1, 9999),
+            'quote_number' => 'QT-'.$dateQuote->format('Ym').'-'.fake()->unique()->numberBetween(1, 9999),
             'date_quote' => $dateQuote,
             'valid_until' => $validUntil,
             'status' => fake()->randomElement(['Sent same day', 'Sent within 2-3 days', 'Sent after 4+ days']),
@@ -35,7 +35,7 @@ class QuoteFactory extends Factory
             'vat' => fake()->randomFloat(2, 0, 2000),
             'total_ttc' => fake()->randomFloat(2, 100, 12000),
             'signature_name' => fake()->optional()->name(),
-            'signature_title' => fake()->optional()->jobTitle()
+            'signature_title' => fake()->optional()->jobTitle(),
         ];
     }
 }

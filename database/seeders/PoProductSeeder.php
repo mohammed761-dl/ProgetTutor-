@@ -23,7 +23,7 @@ class PoProductSeeder extends Seeder
                         ->where('quote_product_id', $quoteProduct->id)
                         ->exists();
 
-                    if (!$exists) {
+                    if (! $exists) {
                         \App\Models\PoProduct::createWithSnapshot($po->id_po, $quoteProduct);
                     }
                 }

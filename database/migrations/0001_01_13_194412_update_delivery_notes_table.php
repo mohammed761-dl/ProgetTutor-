@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -13,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('delivery_notes', function (Blueprint $table) {
-           
+
             if (Schema::hasColumn('delivery_notes', 'delivery_status')) {
                 $table->dropColumn('delivery_status');
             }
@@ -22,11 +21,11 @@ return new class extends Migration
             }
 
             // Add new columns if they don't exist
-            if (!Schema::hasColumn('delivery_notes', 'id_po')) {
+            if (! Schema::hasColumn('delivery_notes', 'id_po')) {
                 $table->unsignedBigInteger('id_po')->after('dnp_number');
                 $table->foreign('id_po')->references('id_po')->on('purchase_orders');
             }
-            if (!Schema::hasColumn('delivery_notes', 'id_quote')) {
+            if (! Schema::hasColumn('delivery_notes', 'id_quote')) {
                 $table->unsignedBigInteger('id_quote')->after('id_po');
                 $table->foreign('id_quote')->references('id_quote')->on('quotes');
             }

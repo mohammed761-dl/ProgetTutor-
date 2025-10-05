@@ -47,7 +47,7 @@ class CustomerController extends Controller
             $sortField = $request->get('sort', 'created_at');
             $sortDirection = $request->get('direction', 'desc');
             $allowedSortFields = ['company_name', 'contact_name', 'email', 'performance_flag', 'created_at'];
-            
+
             if (in_array($sortField, $allowedSortFields)) {
                 $query->orderBy($sortField, $sortDirection);
             }
@@ -65,8 +65,8 @@ class CustomerController extends Controller
                     'current_page' => $customers->currentPage(),
                     'last_page' => $customers->lastPage(),
                     'per_page' => $customers->perPage(),
-                    'total' => $customers->total()
-                ]
+                    'total' => $customers->total(),
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching customers: '.$e->getMessage());

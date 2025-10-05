@@ -14,7 +14,9 @@ class QuoteTest extends TestCase
     use RefreshDatabase;
 
     protected $customer;
+
     protected $user;
+
     protected $product;
 
     protected function setUp(): void
@@ -29,13 +31,13 @@ class QuoteTest extends TestCase
             'phone' => '+1234567890',
             'address' => '123 Test Street',
             'performance_flag' => 'Always on time',
-            'vat_number' => 'VAT123456'
+            'vat_number' => 'VAT123456',
         ]);
         $this->user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'user@test.com',
             'password' => bcrypt('password'),
-            'role' => 'Commercial'
+            'role' => 'Commercial',
         ]);
         $this->product = Product::factory()->create([
             'product_code' => 'TEST-001',
@@ -47,7 +49,7 @@ class QuoteTest extends TestCase
             'min_delivery_day' => 5,
             'max_delivery_day' => 10,
             'availability_yrs' => 2,
-            'status' => 'Active'
+            'status' => 'Active',
         ]);
     }
 
@@ -74,7 +76,7 @@ class QuoteTest extends TestCase
             'id_customer' => $this->customer->id_customer,
             'id_user' => $this->user->id_user,
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
     }
 
@@ -87,7 +89,7 @@ class QuoteTest extends TestCase
             'date_quote' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
 
         $this->assertNotNull($quote->quote_number);
@@ -103,7 +105,7 @@ class QuoteTest extends TestCase
             'date_quote' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
 
         $quote->products()->attach($this->product->id_product, [
@@ -117,7 +119,7 @@ class QuoteTest extends TestCase
             'max_delivery_day' => $this->product->max_delivery_day,
             'availability_yrs' => $this->product->availability_yrs,
             'quantity' => 2,
-            'unit_price' => 100.00
+            'unit_price' => 100.00,
         ]);
 
         $this->assertDatabaseHas('quote_products', [
@@ -127,7 +129,7 @@ class QuoteTest extends TestCase
             'name' => 'Test Product',
             'quantity' => 2,
             'unit_price' => 100.00,
-            'total_line_price' => 200.00
+            'total_line_price' => 200.00,
         ]);
     }
 
@@ -141,7 +143,7 @@ class QuoteTest extends TestCase
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
             'currency' => 'EUR',
-            'reduction' => 50.00
+            'reduction' => 50.00,
         ]);
 
         // Add two products
@@ -156,7 +158,7 @@ class QuoteTest extends TestCase
             'max_delivery_day' => $this->product->max_delivery_day,
             'availability_yrs' => $this->product->availability_yrs,
             'quantity' => 2,
-            'unit_price' => 100.00  // Total: 200.00
+            'unit_price' => 100.00,  // Total: 200.00
         ]);
 
         // Calculations:
@@ -171,7 +173,7 @@ class QuoteTest extends TestCase
             'total_ht' => 150.00,
             'reduction' => 50.00,
             'vat' => 30.00,
-            'total_ttc' => 180.00
+            'total_ttc' => 180.00,
         ]);
 
         $this->assertEquals(200.00, $quote->total_amount);
@@ -190,7 +192,7 @@ class QuoteTest extends TestCase
             'date_quote' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
 
         $this->assertInstanceOf(Customer::class, $quote->customer);
@@ -206,7 +208,7 @@ class QuoteTest extends TestCase
             'date_quote' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
 
         $quote->products()->attach($this->product->id_product, [
@@ -220,12 +222,12 @@ class QuoteTest extends TestCase
             'max_delivery_day' => $this->product->max_delivery_day,
             'availability_yrs' => $this->product->availability_yrs,
             'quantity' => 1,
-            'unit_price' => 100.00
+            'unit_price' => 100.00,
         ]);
 
         // Refresh the model to get the attached products
         $quote = $quote->fresh(['products']);
-        
+
         $this->assertCount(1, $quote->products);
         $this->assertInstanceOf(Product::class, $quote->products->first());
     }
@@ -239,7 +241,7 @@ class QuoteTest extends TestCase
             'date_quote' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
 
         $newStatus = 'Sent within 2-3 days';
@@ -269,7 +271,7 @@ class QuoteTest extends TestCase
             'date_quote' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
 
         // Add products to the quote
@@ -284,15 +286,15 @@ class QuoteTest extends TestCase
             'max_delivery_day' => $this->product->max_delivery_day,
             'availability_yrs' => $this->product->availability_yrs,
             'quantity' => 1,
-            'unit_price' => 100.00
+            'unit_price' => 100.00,
         ]);
 
         // Get the quote ID for later verification
         $quoteId = $quote->id_quote;
 
         // Create a controller instance
-        $controller = new \App\Http\Controllers\QuoteController();
-        
+        $controller = new \App\Http\Controllers\QuoteController;
+
         // Delete using the controller method
         $response = $controller->destroy($quote);
 
@@ -313,7 +315,7 @@ class QuoteTest extends TestCase
             'date_quote' => now(),
             'valid_until' => now()->addDays(30),
             'status' => 'Sent same day',
-            'currency' => 'EUR'
+            'currency' => 'EUR',
         ]);
 
         // Create a purchase order for this quote
@@ -321,12 +323,12 @@ class QuoteTest extends TestCase
             'id_customer' => $this->customer->id_customer,
             'id_quote' => $quote->id_quote,
             'created_by' => $this->user->id_user,
-            'status' => 'Pending'
+            'status' => 'Pending',
         ]);
 
         // Create a controller instance
-        $controller = new \App\Http\Controllers\QuoteController();
-        
+        $controller = new \App\Http\Controllers\QuoteController;
+
         // Try to delete the quote
         $response = $controller->destroy($quote);
 

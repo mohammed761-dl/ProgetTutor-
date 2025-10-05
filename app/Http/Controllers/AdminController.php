@@ -147,49 +147,35 @@ class AdminController extends Controller
     /**
      * List all admins
      */
-    public function index()
-    {
-    }
+    public function index() {}
 
     /**
      * Show create form
      */
-    public function create()
-    {
-    }
+    public function create() {}
 
     /**
      * Store new admin
      */
-    public function store(Request $request)
-    {
-    }
+    public function store(Request $request) {}
 
     /**
      * Show admin details
      */
-    public function show(Admin $admin)
-    {
-    }
+    public function show(Admin $admin) {}
 
     /**
      * Show edit form
      */
-    public function edit(Admin $admin)
-    {
-    }
+    public function edit(Admin $admin) {}
 
     /**
      * Update admin
      */
-    public function update(Request $request, Admin $admin)
-    {
-    }
+    public function update(Request $request, Admin $admin) {}
 
     /**
      * Delete admin
      */
-    public function destroy(Admin $admin)
-    {
-    }
+    public function destroy(Admin $admin) {}
 }

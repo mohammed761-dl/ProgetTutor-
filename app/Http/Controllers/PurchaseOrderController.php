@@ -113,17 +113,17 @@ class PurchaseOrderController extends Controller
                 'remarks' => $validated['remarks'],
             ]);
 
-                        // Handle PDF upload - rename file to PO number
+            // Handle PDF upload - rename file to PO number
             if ($request->hasFile('po_pdf')) {
                 $file = $request->file('po_pdf');
-                $filename = $purchaseOrder->po_number . '.pdf';
+                $filename = $purchaseOrder->po_number.'.pdf';
                 // Store in storage/app/public/pdf directory using the 'public' disk
                 $file->storeAs('pdf', $filename, 'public');
                 // Save only the filename in the database
                 $purchaseOrder->update(['pdf_path' => $filename]);
                 Log::info('PO PDF file stored successfully', [
                     'po_number' => $purchaseOrder->po_number,
-                    'path' => './storage/app/public/pdf/' . $filename
+                    'path' => './storage/app/public/pdf/'.$filename,
                 ]);
             } else {
                 throw new \Exception('PO PDF file is required.');
@@ -266,12 +266,12 @@ class PurchaseOrderController extends Controller
             // Delete the PDF file if it exists (after DB delete, using saved path)
             if ($pdfPath) {
                 // Always use ./storage/app/public/pdf/PO_NUMBER.pdf
-                $filePath = storage_path('app/public/pdf/' . $pdfPath);
+                $filePath = storage_path('app/public/pdf/'.$pdfPath);
                 if (file_exists($filePath)) {
                     unlink($filePath);
                     Log::info('PO PDF file deleted', [
                         'po_number' => $poNumber,
-                        'file_path' => $filePath
+                        'file_path' => $filePath,
                     ]);
                 }
             }
@@ -282,13 +282,12 @@ class PurchaseOrderController extends Controller
         } catch (\Exception $e) {
             Log::error('Error deleting purchase order: '.$e->getMessage(), [
                 'po_number' => $purchaseOrder->po_number,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return back()->with('error', 'Error deleting Purchase Order. Please try again.');
         }
     }
-
 
     /**
      * Download the stored PDF file for a purchase order
@@ -296,30 +295,30 @@ class PurchaseOrderController extends Controller
     public function downloadPdf(PurchaseOrder $purchaseOrder)
     {
         try {
-            if (!$purchaseOrder->pdf_path) {
+            if (! $purchaseOrder->pdf_path) {
                 throw new \Exception('No PDF file found for this Purchase Order.');
             }
 
             // Always use ./storage/app/public/pdf/PO_NUMBER.pdf
-            $filePath = storage_path('app/public/pdf/' . $purchaseOrder->pdf_path);
+            $filePath = storage_path('app/public/pdf/'.$purchaseOrder->pdf_path);
 
-            if (!file_exists($filePath)) {
+            if (! file_exists($filePath)) {
                 throw new \Exception('PDF file not found on disk.');
             }
 
             Log::info('Serving PO PDF file', [
                 'po_number' => $purchaseOrder->po_number,
-                'file_path' => $filePath
+                'file_path' => $filePath,
             ]);
 
-            return response()->download($filePath, $purchaseOrder->po_number . '.pdf', [
-                'Content-Type' => 'application/pdf'
+            return response()->download($filePath, $purchaseOrder->po_number.'.pdf', [
+                'Content-Type' => 'application/pdf',
             ]);
 
         } catch (\Exception $e) {
-            Log::error('Error serving PO PDF: ' . $e->getMessage(), [
+            Log::error('Error serving PO PDF: '.$e->getMessage(), [
                 'po_number' => $purchaseOrder->po_number,
-                'pdf_path' => $purchaseOrder->pdf_path ?? 'not set'
+                'pdf_path' => $purchaseOrder->pdf_path ?? 'not set',
             ]);
 
             return back()->with('error', $e->getMessage());

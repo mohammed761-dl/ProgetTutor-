@@ -22,14 +22,14 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_aro')
-                  ->references('id_aro')
-                  ->on('aros')
-                  ->onDelete('cascade');
+                ->references('id_aro')
+                ->on('aros')
+                ->onDelete('cascade');
 
             $table->foreign('quote_product_id')
-                  ->references('id')
-                  ->on('quote_products')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('quote_products')
+                ->onDelete('cascade');
         });
     }
 
